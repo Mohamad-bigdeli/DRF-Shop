@@ -35,9 +35,22 @@ ALLOWED_HOSTS = config(
 
 # Application definition
 
-APPS = ["accounts", "authentication", "cart", "orders", "payments", "reviews", "shop"]
+APPS = [
+    "accounts", 
+    "authentication",
+    "cart", 
+    "orders", 
+    "payments", 
+    "reviews", 
+    "shop"
+]
 
-INSTALLED_PACKAGES = ["rest_framework", "drf_yasg"]
+INSTALLED_PACKAGES = [
+    "rest_framework", 
+    "drf_yasg",
+    "django_elasticsearch_dsl", 
+    "django_elasticsearch_dsl_drf"
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -142,3 +155,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Elasticsearch configuration
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'https://127.0.0.1:9200'
+    },
+}

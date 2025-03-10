@@ -3,3 +3,5 @@ python-decouple
 pillow
 djangorestframework
 drf-yasg[validation]
+django-elasticsearch-dsl
+django-elasticsearch-dsl-drf
