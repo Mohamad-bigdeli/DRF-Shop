@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from ...models import Category , ProductImage, ProductFeature, Product
+from django_elasticsearch_dsl_drf.serializers import DocumentSerializer
+from ...documents import ProductDocument
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -72,3 +74,17 @@ def update(self, instance, validated_data):
     for feature in features:
         ProductFeature.objects.create(product=instance, **feature)
     return instance
+
+class ProductDocumentSerializer(DocumentSerializer):
+    
+    class Meta:
+        document = ProductDocument
+        fields = [
+            "id",
+            "title",
+            "description",
+            "final_price",
+            "category.title",
+            "features.title",
+            "features.value",
+        ]
