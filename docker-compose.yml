@@ -22,6 +22,22 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200  
     depends_on:
       - elasticsearch 
+  
+  backend:
+    build: .
+    container_name: "backend"
+    command: python manage.py runserver 0.0.0.0:8000
+    restart: "always"    
+    volumes:
+      - ./core:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=test
+      - DEBUG=True
+    depends_on:
+      - elasticsearch
+      - kibana
 
 volumes:
   elasticsearch_data: 

@@ -47,8 +47,7 @@ class ProductDocumentViewSet(DocumentViewSet):
     filter_fields = {
         "final_price" : "final_price" 
     }
-
+    
     ordering_fields = {
         "final_price": "final_price", 
-        "title": "title",
     }

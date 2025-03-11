@@ -159,6 +159,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Elasticsearch configuration
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'https://127.0.0.1:9200'
+        'hosts': 'elasticsearch:9200'
     },
 }

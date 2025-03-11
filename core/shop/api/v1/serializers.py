@@ -85,6 +85,5 @@ class ProductDocumentSerializer(DocumentSerializer):
             "description",
             "final_price",
             "category.title",
-            "features.title",
             "features.value",
         ]

@@ -6,9 +6,9 @@ app_name = "api-v1"
 
 router = DefaultRouter()
 
-router.register(r"categories", CategoryViewSet, basename="categories")
-router.register(r"products", ProductViewSet, basename="products")
-router.register(r"products", ProductDocumentViewSet, basename="products")
+router.register(r"categories", CategoryViewSet, basename="categories"),
+router.register(r"products", ProductViewSet, basename="products"),
+router.register(r"products", ProductDocumentViewSet, basename="products-document")
 
 urlpatterns = []
 

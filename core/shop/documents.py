@@ -6,7 +6,7 @@ from .models import Product, Category, ProductFeature
 class ProductDocument(Document):
 
     category = fields.ObjectField(properties={"title": fields.TextField(),})
-    features = fields.NestedField(properties={"title": fields.TextField(),"value": fields.TextField(),})
+    features = fields.NestedField(properties={"value": fields.TextField(),})
 
     class Index:
         name = 'products'  
