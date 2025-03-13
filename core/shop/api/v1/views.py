@@ -4,7 +4,13 @@ from .serializers import CategorySerializer, ProductSerializer, ProductDocumentS
 from rest_framework.permissions import IsAdminUser, SAFE_METHODS, AllowAny
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from ...documents import ProductDocument, CategoryDocument
-from django_elasticsearch_dsl_drf.filter_backends import FilteringFilterBackend, OrderingFilterBackend, SearchFilterBackend, DefaultOrderingFilterBackend
+from django_elasticsearch_dsl_drf.filter_backends import (
+    FilteringFilterBackend,
+    OrderingFilterBackend,
+    MultiMatchSearchFilterBackend,
+    DefaultOrderingFilterBackend,
+    SearchFilterBackend
+)
 from .paginations import CustomPagination
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -36,26 +42,43 @@ class ProductDocumentViewSet(DocumentViewSet):
 
     filter_backends = [
         FilteringFilterBackend,
-        OrderingFilterBackend, 
-        SearchFilterBackend,
-        DefaultOrderingFilterBackend
+        OrderingFilterBackend,
+        MultiMatchSearchFilterBackend,
+        DefaultOrderingFilterBackend,
+        SearchFilterBackend
     ]
 
+    multi_match_search_fields = {
+        "title": {"boost": 4},
+        "description": {"boost": 2},
+        "category.title": {"boost": 3},
+        "features.value": {"boost": 1}
+    }
+
     search_fields = (
-        "title",
+        "title", 
         "description",
         "category.title",
         "features.value"
     )
 
-    filter_fields = {
-        "final_price" : "final_price" 
-    }
-    
-    ordering_fields = {
-        "final_price": "final_price", 
+    multi_match_options = {
+        "fuzziness": "AUTO",
+        "prefix_length": 2,
+        "max_expansions": 50
     }
 
+    ordering_fields = {
+        "final_price": "final_price",
+        "created": "created",
+        "updated": "updated"
+    }
+
+    filter_fields = {
+        "final_price": "final_price",
+        "category.title": "category.title",
+        "features.value": "features.value"
+    }
 class CategoryDocumentViewSet(DocumentViewSet):
 
     document = CategoryDocument
@@ -63,9 +86,20 @@ class CategoryDocumentViewSet(DocumentViewSet):
     pagination_class = CustomPagination
 
     filter_backends = [
-        SearchFilterBackend,
+        OrderingFilterBackend,
+        MultiMatchSearchFilterBackend,
+        DefaultOrderingFilterBackend,
+        SearchFilterBackend
+    ]
+    multi_match_search_fields = {
+        "title": {"boost": 4},
+    }
+
+    search_fields = [
+        "title"
     ]
 
-    search_fields = (
-        "title"
-    )
+    ordering_fields = {
+        "created": "created",
+        "updated": "updated"
+    }

@@ -117,3 +117,5 @@ dmypy.json
 media
 static
 staticfiles
+
+doc.txt

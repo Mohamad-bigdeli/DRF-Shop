@@ -76,22 +76,51 @@ def update(self, instance, validated_data):
     return instance
 
 class ProductDocumentSerializer(DocumentSerializer):
+
+    images = ProductImageSerializer(many=True, read_only=True)
+    features = ProductFeatureSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+
     class Meta:
         document = ProductDocument
         fields = [
             "id",
+            "category",
             "title",
+            "images",
             "description",
+            "features",
+            "inventory",
+            "price",
+            "discount",
             "final_price",
-            "category.title",
-            "features.value",
+            "created",
+            "updated"
         ]
+        read_only_fields = ["final_price"]
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get("request")
+        if "category" in rep and isinstance(rep["category"], dict):
+            rep["category"] = CategorySerializer(rep["category"], context={"request": request}).data
+
+        if "features" in rep and isinstance(rep["features"], list):
+            rep["features"] = [ProductFeatureSerializer(feature, context={"request": request}).data for feature in rep["features"]]
+
+        if "images" in rep and isinstance(rep["images"], list):
+            rep["images"] = [ProductImageSerializer(image, context={"request": request}).data for image in rep["images"]]
+
+        return rep
 
 class CategoryDocumentSerializer(DocumentSerializer):
-    
+
     class Meta:
         document = CategoryDocument
         fields = [
             "id",
-            "title"
+            "title",
+            "slug", 
+            "created", 
+            "updated"
         ]
