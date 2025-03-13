@@ -4,7 +4,8 @@ from .serializers import CategorySerializer, ProductSerializer, ProductDocumentS
 from rest_framework.permissions import IsAdminUser, SAFE_METHODS, AllowAny
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from ...documents import ProductDocument
-from django_elasticsearch_dsl_drf.filter_backends import FilteringFilterBackend, OrderingFilterBackend, SearchFilterBackend
+from django_elasticsearch_dsl_drf.filter_backends import FilteringFilterBackend, OrderingFilterBackend, SearchFilterBackend, DefaultOrderingFilterBackend
+from .paginations import CustomPagination
 
 class CategoryViewSet(viewsets.ModelViewSet):
     
@@ -20,6 +21,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+    pagination_class = CustomPagination
 
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:
@@ -30,11 +32,13 @@ class ProductDocumentViewSet(DocumentViewSet):
 
     document = ProductDocument
     serializer_class = ProductDocumentSerializer
+    pagination_class = CustomPagination
 
     filter_backends = [
         FilteringFilterBackend,
         OrderingFilterBackend, 
-        SearchFilterBackend
+        SearchFilterBackend,
+        DefaultOrderingFilterBackend
     ]
 
     search_fields = (

@@ -1,19 +1,22 @@
-from django_elasticsearch_dsl import Document, fields
-from django_elasticsearch_dsl.registries import registry
+from django_elasticsearch_dsl import Document, fields, Index
+from django.conf import settings
 from .models import Product, Category, ProductFeature
 
-@registry.register_document
-class ProductDocument(Document):
 
+INDEX = Index("products")
+
+# See Elasticsearch Indices API reference for available settings
+INDEX.settings(
+    number_of_shards=1,
+    number_of_replicas=0
+)
+
+@INDEX.doc_type
+class ProductDocument(Document):
+    """Product Elasticsearch document."""
+    
     category = fields.ObjectField(properties={"title": fields.TextField(),})
     features = fields.NestedField(properties={"value": fields.TextField(),})
-
-    class Index:
-        name = 'products'  
-        settings = {
-            'number_of_shards': 1,  
-            'number_of_replicas': 0, 
-        }
 
     class Django:
         model = Product 
