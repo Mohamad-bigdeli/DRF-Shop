@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from ...models import Category, Product
-from .serializers import CategorySerializer, ProductSerializer, ProductDocumentSerializer
+from .serializers import CategorySerializer, ProductSerializer, ProductDocumentSerializer, CategoryDocumentSerializer
 from rest_framework.permissions import IsAdminUser, SAFE_METHODS, AllowAny
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
-from ...documents import ProductDocument
+from ...documents import ProductDocument, CategoryDocument
 from django_elasticsearch_dsl_drf.filter_backends import FilteringFilterBackend, OrderingFilterBackend, SearchFilterBackend, DefaultOrderingFilterBackend
 from .paginations import CustomPagination
 
@@ -55,3 +55,17 @@ class ProductDocumentViewSet(DocumentViewSet):
     ordering_fields = {
         "final_price": "final_price", 
     }
+
+class CategoryDocumentViewSet(DocumentViewSet):
+
+    document = CategoryDocument
+    serializer_class = CategoryDocumentSerializer
+    pagination_class = CustomPagination
+
+    filter_backends = [
+        SearchFilterBackend,
+    ]
+
+    search_fields = (
+        "title"
+    )

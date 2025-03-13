@@ -3,15 +3,20 @@ from django.conf import settings
 from .models import Product, Category, ProductFeature
 
 
-INDEX = Index("products")
+PRODUCT_INDEX = Index("products")
+CATEGORY_INDEX = Index("categories")
 
-# See Elasticsearch Indices API reference for available settings
-INDEX.settings(
+PRODUCT_INDEX.settings(
     number_of_shards=1,
     number_of_replicas=0
 )
 
-@INDEX.doc_type
+CATEGORY_INDEX.settings(
+    number_of_shards=1,
+    number_of_replicas=0
+)
+
+@PRODUCT_INDEX.doc_type
 class ProductDocument(Document):
     """Product Elasticsearch document."""
     
@@ -35,3 +40,12 @@ class ProductDocument(Document):
             return related_instance.products.all()
         elif isinstance(related_instance, ProductFeature):
             return related_instance.product
+        
+@CATEGORY_INDEX.doc_type
+class CategoryDocument(Document):
+
+    class Django:
+        model = Category
+        fields = [
+            "title"
+        ]
