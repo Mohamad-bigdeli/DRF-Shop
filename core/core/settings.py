@@ -156,6 +156,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom User
+AUTH_USER_MODEL = "accounts.ShopUser"
+
 # Elasticsearch configuration
 ELASTICSEARCH_DSL = {
     'default': {

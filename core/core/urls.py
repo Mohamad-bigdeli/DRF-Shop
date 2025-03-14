@@ -35,8 +35,12 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # App urls
     path('admin/', admin.site.urls),
     path("shop/", include("shop.urls", namespace="shop"),),
+    path("authentication/", include("authentication.urls", namespace="authentication")),
+
+    # Documentation urls 
     path(
         "swagger/api.json/",
         schema_view.without_ui(cache_timeout=0),
