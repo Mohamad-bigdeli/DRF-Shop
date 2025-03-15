@@ -1,8 +1,8 @@
 from django.urls import path, include
 
-app_name = "accounts"
+app_name = "authentication"
 
 urlpatterns = [
-    path("accounts/", include("django.contrib.auth.urls")),
+    path("api/v1/", include("authentication.api.v1.urls")),
     path("api-auth/", include("rest_framework.urls")),
 ]

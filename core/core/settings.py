@@ -49,7 +49,7 @@ INSTALLED_PACKAGES = [
     "rest_framework", 
     "drf_yasg",
     "django_elasticsearch_dsl", 
-    "django_elasticsearch_dsl_drf"
+    "django_elasticsearch_dsl_drf",
 ]
 
 INSTALLED_APPS = [

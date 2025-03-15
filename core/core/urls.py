@@ -39,6 +39,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("shop/", include("shop.urls", namespace="shop"),),
     path("authentication/", include("authentication.urls", namespace="authentication")),
+    path("accounts/", include("accounts.urls", namespace="accounts")),
 
     # Documentation urls 
     path(
