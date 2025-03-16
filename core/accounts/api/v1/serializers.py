@@ -56,3 +56,6 @@ class ShopUserChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"password": list(e.messages)})
         return super().validate(attrs)
 
+class ShopUserForgotPasswordEmailSerializer(serializers.Serializer):
+
+    email = serializers.EmailField(max_length=255, required=True)

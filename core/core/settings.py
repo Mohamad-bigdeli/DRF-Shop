@@ -50,6 +50,7 @@ INSTALLED_PACKAGES = [
     "drf_yasg",
     "django_elasticsearch_dsl", 
     "django_elasticsearch_dsl_drf",
+    "mail_templated",
 ]
 
 INSTALLED_APPS = [
@@ -166,3 +167,25 @@ ELASTICSEARCH_DSL = {
     },
 }
 
+# Email configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = False
+EMAIL_HOST = "smtp4dev"
+EMAIL_HOST_USER = "example@gmail.com"
+EMAIL_HOST_PASSWORD = ""
+EMAIL_PORT = 25
+
+# Celery configs
+CELERY_BROKER_URL = "redis://redis:6379/1"
+
+# caching configs
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/2",
+        "TIME_OUT": 120,
+        "OPTIONS": {
+            "CLIENT": "django_redis.client.DefaultClient",
+        },
+    }
+}

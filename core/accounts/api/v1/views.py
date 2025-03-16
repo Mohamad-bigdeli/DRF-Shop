@@ -1,11 +1,15 @@
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from .serializers import (ShopUserRelatedSerializer, ShopUserUpdateSerializer,
-            ShopUserRegisterSerializer, ShopUserChangePasswordSerializer
+            ShopUserRegisterSerializer, ShopUserChangePasswordSerializer, 
+            ShopUserForgotPasswordEmailSerializer, 
         )
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from utils.generate_code import generate_code
+from django.core.cache import cache
+from utils.send_verification_code import send_with_email, send_with_phone
 
 # get custom user model
 User = get_user_model()
@@ -74,3 +78,23 @@ class ShopUserChangePasswordView(generics.GenericAPIView):
         return Response({
             "detail": "Change password successfully"
         }, status=status.HTTP_200_OK)
+
+class ShopUserForgotPasswordEmailView(generics.GenericAPIView):
+
+    serializer_class = ShopUserForgotPasswordEmailSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            verification_code = generate_code()
+            cache.set(f"email-{user.id}", verification_code, timeout=120)
+
+            send_with_email.delay(verification_code, email)
+            
+            return Response({"detail":"Send verification code successfully"}, status=status.HTTP_200_OK)
+        return Response({"detail":"User dose not exist!"}, status=status.HTTP_404_NOT_FOUND)

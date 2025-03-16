@@ -1,6 +1,24 @@
 version: '3.7'
 
 services:
+
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    command: redis-server --save 60 1 --loglevel warning
+
+  worker:
+    build: .
+    command: celery -A core worker --loglevel=info 
+    volumes:
+      - ./core:/app
+    depends_on:
+      - redis
+      - backend
+  
   elasticsearch:
     image: elasticsearch:7.17.0
     container_name: elasticsearch
@@ -38,6 +56,20 @@ services:
     depends_on:
       - elasticsearch
       - kibana
+      - redis
+
+  smtp4dev:
+    image: rnwood/smtp4dev
+    restart: always
+    ports:
+      - "5000:80"
+      - "25:25"
+      - "143:143"
+    volumes:
+      - smtp4dev-data:/smtp4dev
+    environment:
+      - ServerOptions_HostName=smtp4dev
 
 volumes:
   elasticsearch_data: 
+  smtp4dev-data:
