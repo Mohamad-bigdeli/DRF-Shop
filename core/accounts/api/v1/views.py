@@ -2,7 +2,8 @@ from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from .serializers import (ShopUserRelatedSerializer, ShopUserUpdateSerializer,
             ShopUserRegisterSerializer, ShopUserChangePasswordSerializer, 
-            ShopUserForgotPasswordEmailSerializer, 
+            ShopUserForgotPasswordEmailSerializer, ShopUserForgotPasswordPhoneSerializer,
+            ResetPasswordSerializer
         )
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
@@ -91,10 +92,72 @@ class ShopUserForgotPasswordEmailView(generics.GenericAPIView):
         user = User.objects.filter(email=email).first()
 
         if user:
-            verification_code = generate_code()
-            cache.set(f"email-{user.id}", verification_code, timeout=120)
-
-            send_with_email.delay(verification_code, email)
+            try:
+                verification_code = str(generate_code())
+                cache.set(f"email-{user.id}", verification_code, timeout=120)
+                # send_with_email.delay(verification_code, email)
+                send_with_email(verification_code, email)
+            except Exception:
+                   return Response({"detail":"The operation was not performed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
             return Response({"detail":"Send verification code successfully"}, status=status.HTTP_200_OK)
         return Response({"detail":"User dose not exist!"}, status=status.HTTP_404_NOT_FOUND)
+
+class ForgotPasswordPhoneView(generics.GenericAPIView):
+
+    serializer_class = ShopUserForgotPasswordPhoneSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        phone = serializer.validated_data["phone"]
+        user = User.objects.filter(phone=phone).first()
+
+        if user:
+            try:
+                verification_code = str(generate_code())
+                cache.set(f"phone-{user.id}", verification_code, timeout=120)
+                # send_with_phone.delay(verification_code, phone)
+                send_with_phone(verification_code, phone)
+            except Exception:
+                return Response({"detail":"The operation was not performed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+            return Response({"detail":"Send verification code successfully"}, status=status.HTTP_200_OK)
+        return Response({"detail":"User dose not exist!"}, status=status.HTTP_404_NOT_FOUND)
+
+class ResetPasswordView(generics.GenericAPIView):
+    
+    serializer_class = ResetPasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"] if serializer.validated_data.get("email") else None
+        phone = serializer.validated_data["phone"] if serializer.validated_data.get("phone") else None
+        verification_code = serializer.validated_data["verification_code"]
+        new_password = serializer.validated_data["new_password"]
+        new_password1 = serializer.validated_data["new_password1"]
+
+        if email:
+            user = User.objects.filter(email=email).first()
+            cache_key = f"email-{user.id}" if user else None
+        elif phone:
+            user = User.objects.filter(phone=phone).first()
+            cache_key = f"phone-{user.id}" if user else None
+        if not user:
+            return Response({"detail": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        verification_code_cache = cache.get(cache_key)
+        if verification_code != verification_code_cache:
+            return Response({"detail": "The code entered is not correct."}, status=status.HTTP_400_BAD_REQUEST)
+        elif new_password == new_password1:
+            user.set_password(new_password)
+            user.save()
+            cache.delete(cache_key)
+            return Response({"detail": "Password set successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail":"Passwords doesn't match!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                

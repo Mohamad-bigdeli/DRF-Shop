@@ -59,3 +59,40 @@ class ShopUserChangePasswordSerializer(serializers.Serializer):
 class ShopUserForgotPasswordEmailSerializer(serializers.Serializer):
 
     email = serializers.EmailField(max_length=255, required=True)
+
+class ShopUserForgotPasswordPhoneSerializer(serializers.Serializer):
+
+    phone = serializers.CharField(max_length=11, required=True)
+
+    def validate(self, attrs):
+        if not attrs.get("phone").isdigit():
+            raise serializers.ValidationError({"detail":"Invalid phone number."})
+        if not attrs.get("phone").startswith("09"):
+            raise serializers.ValidationError({"detail":"Phone must start with 09 digits."})
+        return super().validate(attrs)
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=255 ,required=False)
+    phone = serializers.CharField(max_length=11, required=False)
+    verification_code = serializers.CharField(max_length=6, required=True)
+    new_password = serializers.CharField(max_length=255, required=True)
+    new_password1 = serializers.CharField(max_length=255, required=True)
+
+    def validate(self, attrs):
+        if not attrs.get("email") and not attrs.get("phone"):
+            raise serializers.ValidationError("Either email or phone number is required.")
+        if attrs.get("email"):
+            try:
+                user = User.objects.filter(email=attrs.get("email"))
+            except User.DoesNotExist:
+                raise serializers.ValidationError("User with this email does not exist.")
+        if attrs.get("phone"):
+            if not attrs.get("phone").isdigit():
+                raise serializers.ValidationError({"detail":"Invalid phone number."})
+            if not attrs.get("phone").startswith("09"):
+                raise serializers.ValidationError({"detail":"Phone must start with 09 digits."})
+            try:
+                user = User.objects.filter(phone=attrs.get("phone"))
+            except User.DoesNotExist:
+                raise serializers.ValidationError("User with this phone number does not exist.")
+        return super().validate(attrs)

@@ -12,3 +12,4 @@ celery
 redis
 django-redis
 django-mail-templated
+django-cors-headers

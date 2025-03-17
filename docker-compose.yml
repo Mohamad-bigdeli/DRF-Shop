@@ -58,18 +58,5 @@ services:
       - kibana
       - redis
 
-  smtp4dev:
-    image: rnwood/smtp4dev
-    restart: always
-    ports:
-      - "5000:80"
-      - "25:25"
-      - "143:143"
-    volumes:
-      - smtp4dev-data:/smtp4dev
-    environment:
-      - ServerOptions_HostName=smtp4dev
-
 volumes:
   elasticsearch_data: 
-  smtp4dev-data:
