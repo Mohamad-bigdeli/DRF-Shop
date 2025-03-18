@@ -13,3 +13,4 @@ redis
 django-redis
 django-mail-templated
 django-cors-headers
+djangorestframework-simplejwt

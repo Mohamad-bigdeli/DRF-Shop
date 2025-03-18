@@ -160,4 +160,9 @@ class ResetPasswordView(generics.GenericAPIView):
         else:
             return Response({"detail":"Passwords doesn't match!"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                
+class ShopUserDeleteView(generics.GenericAPIView, mixins.DestroyModelMixin):
+
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self):
+        return User.objects.filter(id=self.request.user.id).first()

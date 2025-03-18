@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 from decouple import config
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -53,6 +54,7 @@ INSTALLED_PACKAGES = [
     "django_elasticsearch_dsl_drf",
     "mail_templated",
     'corsheaders',
+    "rest_framework_simplejwt"
 ]
 
 INSTALLED_APPS = [
@@ -197,3 +199,27 @@ CACHES = {
 
 # cors headers configs
 CORS_ALLOW_ALL_ORIGINS = True 
+
+# rest framework configs
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
+# jwt configs
+JWT_SECRET = config("JWT_SECRET", default="test")
+JWT_AUDIENCE = config("JWT_AUDIENCE", default="shop")
+JWT_ISSUER = config("JWT_ISSUER", default="localhost")
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "SIGNING_KEY": JWT_SECRET,
+    "AUDIENCE": JWT_AUDIENCE,
+    "ISSUER": JWT_ISSUER,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "sub",
+}
