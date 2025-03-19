@@ -34,7 +34,10 @@ class ProductDocument(Document):
         search_analyzer="standard"
     )
     category = fields.ObjectField(properties={
-        "title": fields.TextField(),
+        "title": fields.TextField(
+        analyzer="edge_ngram_analyzer",  
+        search_analyzer="standard"
+        ),
         "slug": fields.TextField()
     })
     features = fields.NestedField(properties={

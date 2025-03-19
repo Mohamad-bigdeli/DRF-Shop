@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.contrib.auth.password_validation import validate_password
+from ...models import Profile
 
 # get custom user model 
 User = get_user_model()
@@ -96,3 +97,34 @@ class ResetPasswordSerializer(serializers.Serializer):
             except User.DoesNotExist:
                 raise serializers.ValidationError("User with this phone number does not exist.")
         return super().validate(attrs)
+
+class ProfileRelatedSerializer(serializers.ModelSerializer):
+
+    user = ShopUserRelatedSerializer()
+    class Meta:
+        model = Profile
+        fields = [
+            "user",
+            "first_name",
+            "last_name",
+            "bio",
+            "address",
+            "postal_code",
+            "image",
+            "created",
+            "updated"
+        ]
+        read_only_fields = ["__all__"]
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = [
+            "first_name",
+            "last_name",
+            "bio",
+            "address",
+            "postal_code",
+            "image",
+        ]

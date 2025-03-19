@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .serializers import (ShopUserRelatedSerializer, ShopUserUpdateSerializer,
             ShopUserRegisterSerializer, ShopUserChangePasswordSerializer, 
             ShopUserForgotPasswordEmailSerializer, ShopUserForgotPasswordPhoneSerializer,
-            ResetPasswordSerializer
+            ResetPasswordSerializer, ProfileRelatedSerializer, ProfileUpdateSerializer
         )
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from utils.generate_code import generate_code
 from django.core.cache import cache
 from utils.send_verification_code import send_with_email, send_with_phone
+from ...models import Profile
 
 # get custom user model
 User = get_user_model()
@@ -166,3 +167,27 @@ class ShopUserDeleteView(generics.GenericAPIView, mixins.DestroyModelMixin):
     
     def get_object(self):
         return User.objects.filter(id=self.request.user.id).first()
+
+class ProfileRelatedView(generics.GenericAPIView, mixins.RetrieveModelMixin):
+
+    serializer_class = ProfileRelatedSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        profile = Profile.objects.filter(user=self.request.user.id).first()
+        return profile
+    
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
+
+    serializer_class = ProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        profile = Profile.objects.filter(user=self.request.user).first()
+        return profile
+    
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
