@@ -40,6 +40,7 @@ urlpatterns = [
     path("shop/", include("shop.urls", namespace="shop"),),
     path("authentication/", include("authentication.urls", namespace="authentication")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
+    path("cart/", include("cart.urls", namespace="cart")),
 
     # Documentation urls 
     path(
