@@ -1,4 +1,3 @@
-from decouple import config
 import json
 from django.contrib.auth import get_user_model
 from shop.models import Product
@@ -14,7 +13,7 @@ class CartService:
         """
         Generate the cart key for a user.
         """
-        return config("CART_CACHE_KEY").format(user_id=user_id)
+        return f"cart:{user_id}"
     
     @staticmethod
     def add_item(user: User, product: Product, quantity: int) -> dict:
@@ -30,28 +29,31 @@ class CartService:
 
         if cart_item:
             cart_item = json.loads(cart_item)
-            if product.id in cart_item:
-                if cart_item[product.id]["quantity"] + quantity > product.inventory:
+            if str(product.id) in cart_item: 
+                if cart_item[str(product.id)]["quantity"] + quantity > product.inventory:
                     raise exceptions.MaximumQuantityExceeded("The requested quantity exceeds the available inventory.")
-                cart_item[product.id]["quantity"] += quantity
+                cart_item[str(product.id)]["quantity"] += quantity
+                cart_item[str(product.id)]["total_price"] = str(float(cart_item[str(product.id)]["price"]) * cart_item[str(product.id)]["quantity"])
             else:
-                cart_item[product.id] = {
+                cart_item[str(product.id)] = {
                     "title": product.title,
                     "quantity": quantity,
-                    "price": str(product.final_price),  
+                    "price": str(product.final_price),
+                    "total_price": str(product.final_price * quantity)
                 }
         else:
             cart_item = {
-                product.id: {
+                str(product.id): {  
                     "title": product.title,
                     "quantity": quantity,
-                    "price": str(product.final_price),  
+                    "price": str(product.final_price),
+                    "total_price": str(product.final_price * quantity)
                 }
             }
 
         cache.set(cart_key, json.dumps(cart_item))
         return cart_item
-    
+
     @staticmethod
     def update_item(user: User, product: Product, quantity: int) -> dict:
         """
@@ -68,7 +70,11 @@ class CartService:
         if not cart_item:
             raise exceptions.ProductNotInCart("The product is not in your cart.")
 
-        cart_item = json.loads(cart_item)
+        try:
+            cart_item = json.loads(cart_item)
+        except json.JSONDecodeError:
+            raise exceptions.InvalidCart("The cart data is invalid.")
+
         if str(product.id) not in cart_item:
             raise exceptions.ProductNotInCart("The product is not in your cart.")
 
@@ -77,10 +83,10 @@ class CartService:
             del cart_item[str(product.id)]
         else:
             cart_item[str(product.id)]["quantity"] = quantity
+            cart_item[str(product.id)]["total_price"] = str(float(cart_item[str(product.id)]["price"]) * quantity)
 
         cache.set(cart_key, json.dumps(cart_item))
         return cart_item
-
     @staticmethod
     def get_items(user: User) -> dict:
         """

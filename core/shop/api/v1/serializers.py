@@ -28,6 +28,8 @@ class ProductSerializer(serializers.ModelSerializer):
 
     images = ProductImageSerializer(many=True)
     features = ProductFeatureSerializer(many=True)
+    relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
+    absolute_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -42,6 +44,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             "discount",
             "final_price",
+            "relative_url",
+            "absolute_url",
             "created",
             "updated"
         ]
@@ -52,6 +56,10 @@ class ProductSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         rep["category"] = CategorySerializer(instance.category, context={"request": request}).data
         return rep
+    
+    def get_absolute_url(self, obj):
+        request = self.context.get("request")
+        return request.build_absolute_uri(obj.pk)
 
     def create(self, validated_data):
         images = validated_data.pop('images')
@@ -80,6 +88,7 @@ class ProductDocumentSerializer(DocumentSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     features = ProductFeatureSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
+    relative_url = serializers.URLField(source="get_absolute_api_url", read_only=True)
 
     class Meta:
         document = ProductDocument
@@ -94,6 +103,7 @@ class ProductDocumentSerializer(DocumentSerializer):
             "price",
             "discount",
             "final_price",
+            "relative_url",
             "created",
             "updated"
         ]
@@ -110,7 +120,7 @@ class ProductDocumentSerializer(DocumentSerializer):
 
         if "images" in rep and isinstance(rep["images"], list):
             rep["images"] = [ProductImageSerializer(image, context={"request": request}).data for image in rep["images"]]
-
+        
         return rep
 
 class CategoryDocumentSerializer(DocumentSerializer):

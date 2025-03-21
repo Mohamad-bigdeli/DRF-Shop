@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse
 
 # Create your models here.
 
@@ -53,6 +54,9 @@ class Product(models.Model):
         else:
             self.final_price = self.price
         super().save(*args, **kwargs)
+    
+    def get_absolute_api_url(self):
+        return reverse("shop:api-v1:products-detail", kwargs={"pk": self.pk})
         
 class ProductImage(models.Model):
     """
