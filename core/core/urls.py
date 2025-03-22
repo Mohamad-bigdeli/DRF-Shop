@@ -23,12 +23,12 @@ from django.conf.urls.static import static
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
+        title="Shop API",
         default_version="v1",
-        description="Test description",
+        description="Online Shop Endpoints",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
+        contact=openapi.Contact(email="admin@admin.com"),
+        license=openapi.License(name="MIT License"),
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
@@ -41,6 +41,7 @@ urlpatterns = [
     path("authentication/", include("authentication.urls", namespace="authentication")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("cart/", include("cart.urls", namespace="cart")),
+    path("reviews/", include("reviews.urls", namespace="reviews")),
 
     # Documentation urls 
     path(
