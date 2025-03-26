@@ -23,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="test")
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=True)
+DEBUG = config("DEBUG")
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -176,10 +176,10 @@ ELASTICSEARCH_DSL = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  
 EMAIL_HOST = 'smtp.gmail.com'  
 EMAIL_PORT = 587  
-EMAIL_USE_TLS = True  
-EMAIL_USE_SSL = False 
-EMAIL_HOST_USER = 'mhmdbigdeli3@gmail.com'  
-EMAIL_HOST_PASSWORD = 'vwgqzvxkbhnyoecr'  
+EMAIL_USE_TLS = config("EMAIL_USE_TLS")  
+EMAIL_USE_SSL = config("EMAIL_USE_SSL") 
+EMAIL_HOST_USER = config("EMAIL_HOST_USER") 
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")  
 
 # Celery configs
 CELERY_BROKER_URL = 'redis://redis:6379/1'
@@ -208,9 +208,9 @@ REST_FRAMEWORK = {
 }
 
 # jwt configs
-JWT_SECRET = config("JWT_SECRET", default="test")
-JWT_AUDIENCE = config("JWT_AUDIENCE", default="shop")
-JWT_ISSUER = config("JWT_ISSUER", default="localhost")
+JWT_SECRET = config("JWT_SECRET")
+JWT_AUDIENCE = config("JWT_AUDIENCE")
+JWT_ISSUER = config("JWT_ISSUER")
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),
@@ -222,4 +222,43 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "sub",
+}
+
+# Zibal settings
+ZIBAL_MERCHANT_ID = config("ZIBAL_MERCHANT_ID")
+ZIBAL_SANDBOX = config("ZIBAL_SANDBOX")
+BASE_URL = config("BASE_URL")
+
+# logging configs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'payment_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/payments.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'payments': {
+            'handlers': ['console', 'payment_file'],
+            'level': 'DEBUG',
+        },
+    },
 }

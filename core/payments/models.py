@@ -16,7 +16,7 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     transaction_id = models.CharField(max_length=100, blank=True)
     payment_url = models.URLField(blank=True, null=True)  
-    gateway_response = models.JSONField(default=dict)
+    gateway_response = models.JSONField(default=dict, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     

@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from ...models import Order
+from ...models import Order, OrderItem
+from payments.models import Payment
+from shop.api.v1.serializers import ProductSerializer
 
 class OrderCreateSerializer(serializers.ModelSerializer):
 
@@ -22,5 +24,55 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"detail":"Phone must start with 09 digits."})
         return super().validate(attrs)
 
+class OrderPaymentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "status",
+            "amount",
+            "transaction_id",
+            "payment_url",
+            "gateway_response",
+            "created"
+        ]
+        read_only_fields = ["__all__"]
+
+class OrderItemsSerializer(serializers.ModelSerializer):
+
+    product = ProductSerializer(many=True)
+    class Meta:
+        model = OrderItem
+        fields =[
+            "id", 
+            "product",
+            "quantity",
+            "price"
+        ]
+        read_only_fields = ["__all__"]
+
 class OrderDetailSerializer(serializers.ModelSerializer):
-    pass
+    
+    payment = OrderPaymentSerializer()
+    items = OrderItemsSerializer(many=True)
+    class Meta:
+        model = Order
+        fields = [
+            "id",
+            "payment",
+            "items",
+            "user",
+            "first_name",
+            "last_name",
+            "phone",
+            "address",
+            "postal_code",
+            "province",
+            "city",
+            "total_price",
+            "status",
+            "created",
+            "updated"
+        ]
+        read_only_fields = ["__all__"]

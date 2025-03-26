@@ -2,7 +2,7 @@ from django.db import transaction
 from .models import Order, OrderItem
 from shop.models import Product
 from payments.models import Payment
-from .tasks import process_payment_task
+from payments.tasks import process_payment_task
 
 class OrderService:
 
@@ -13,7 +13,7 @@ class OrderService:
         total_price = 0
         order_items_data = []
         
-        for product_id, item_data in cart_items.items():
+        for product_id, item_data in cart_items:
             product = Product.objects.select_for_update().get(pk=product_id)
             quantity = item_data['quantity']
             

@@ -2,7 +2,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer, OtpRequestSerializer, OtpVerifySerializer
 from rest_framework import generics
 from utils.generate_code import generate_code
-from utils.send_verification_code import send_with_phone
+from accounts.tasks import send_with_phone
 from django.core.cache import cache
 from rest_framework.response import Response
 from rest_framework import status
@@ -27,8 +27,8 @@ class OtpRequestView(generics.GenericAPIView):
         try:
             otp_code = str(generate_code())
             cache.set(phone, otp_code, timeout=120)
-            # send_with_phone.delay(otp_code, phone)
-            send_with_phone(otp_code, phone)
+            send_with_phone.delay(otp_code, phone)
+            
         except Exception:
             return Response({"detail":"The operation was not performed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)    
         return Response({"detail":"Send otp code successfully"}, status=status.HTTP_200_OK)

@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from utils.generate_code import generate_code
 from django.core.cache import cache
-from utils.send_verification_code import send_with_email, send_with_phone
+from ...tasks import send_with_email, send_with_phone
 from ...models import Profile
 
 # get custom user model
@@ -96,8 +96,7 @@ class ShopUserForgotPasswordEmailView(generics.GenericAPIView):
             try:
                 verification_code = str(generate_code())
                 cache.set(f"email-{user.id}", verification_code, timeout=120)
-                # send_with_email.delay(verification_code, email)
-                send_with_email(verification_code, email)
+                send_with_email.delay(verification_code, email)
             except Exception:
                    return Response({"detail":"The operation was not performed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
@@ -119,8 +118,8 @@ class ForgotPasswordPhoneView(generics.GenericAPIView):
             try:
                 verification_code = str(generate_code())
                 cache.set(f"phone-{user.id}", verification_code, timeout=120)
-                # send_with_phone.delay(verification_code, phone)
-                send_with_phone(verification_code, phone)
+                send_with_phone.delay(verification_code, phone)
+
             except Exception:
                 return Response({"detail":"The operation was not performed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
