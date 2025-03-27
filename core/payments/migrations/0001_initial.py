@@ -9,22 +9,48 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('orders', '0001_initial'),
+        ("orders", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Payment',
+            name="Payment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('PENDING', 'pending'), ('PAID', 'paid'), ('FAILED', 'failed')], default='pending', max_length=10)),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('transaction_id', models.CharField(blank=True, max_length=100)),
-                ('payment_url', models.URLField(blank=True, null=True)),
-                ('gateway_response', models.JSONField(default=dict)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('order', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='payment', to='orders.order')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("PENDING", "pending"),
+                            ("PAID", "paid"),
+                            ("FAILED", "failed"),
+                        ],
+                        default="pending",
+                        max_length=10,
+                    ),
+                ),
+                ("amount", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("transaction_id", models.CharField(blank=True, max_length=100)),
+                ("payment_url", models.URLField(blank=True, null=True)),
+                ("gateway_response", models.JSONField(default=dict)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "order",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="payment",
+                        to="orders.order",
+                    ),
+                ),
             ],
         ),
     ]

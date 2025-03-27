@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from drf_yasg.views import get_schema_view
@@ -36,15 +37,17 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # App urls
-    path('admin/', admin.site.urls),
-    path("shop/", include("shop.urls", namespace="shop"),),
+    path("admin/", admin.site.urls),
+    path(
+        "shop/",
+        include("shop.urls", namespace="shop"),
+    ),
     path("authentication/", include("authentication.urls", namespace="authentication")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("cart/", include("cart.urls", namespace="cart")),
     path("reviews/", include("reviews.urls", namespace="reviews")),
     path("orders/", include("orders.urls", namespace="orders")),
-
-    # Documentation urls 
+    # Documentation urls
     path(
         "swagger/api.json/",
         schema_view.without_ui(cache_timeout=0),

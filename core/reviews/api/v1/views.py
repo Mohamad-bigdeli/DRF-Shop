@@ -1,5 +1,9 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from .serializers import ReviewRelatedSerializer, ReviewCreateSerializer, ReviewUpdateSerializer
+from .serializers import (
+    ReviewRelatedSerializer,
+    ReviewCreateSerializer,
+    ReviewUpdateSerializer,
+)
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,7 +26,8 @@ class ReviewCreateListView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-    
+
+
 class ReviewUpdateDestroyView(RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
@@ -39,32 +44,35 @@ class ReviewUpdateDestroyView(RetrieveUpdateDestroyAPIView):
         if self.request.method in SAFE_METHODS:
             return ReviewRelatedSerializer(*args, **kwargs)
         return ReviewUpdateSerializer(*args, **kwargs)
-    
+
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        
+
         if request.user != instance.user:
-            return Response({"detail":"You do not have permission to edit this comment."}, status=status.HTTP_403_FORBIDDEN)
-        
-        allowed_fields = ['comment', 'rating']
+            return Response(
+                {"detail": "You do not have permission to edit this comment."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        allowed_fields = ["comment", "rating"]
         for field in request.data:
             if field not in allowed_fields:
                 return Response(
                     {"detail": "You can only change the comment and rating fields."},
-                    status=status.HTTP_400_BAD_REQUEST
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
         return super().partial_update(request, *args, **kwargs)
-    
+
     def put(self, request, *args, **kwargs):
         return super().partial_update(request, *args, **kwargs)
-    
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        
-        if request.user != instance.user:
-            return Response({"detail": "You do not have permission to delete this comment."}, status=status.HTTP_403_FORBIDDEN)
-        
-        return super().destroy(request, *args, **kwargs)
-     
 
-    
+        if request.user != instance.user:
+            return Response(
+                {"detail": "You do not have permission to delete this comment."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().destroy(request, *args, **kwargs)

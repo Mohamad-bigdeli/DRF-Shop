@@ -12,8 +12,22 @@ class CustomUserAdmin(UserAdmin):
     model = ShopUser
     form = ShopUserChangeForm
     add_form = ShopUserCreationForm
-    list_display = ("phone", "email", "google_id", "is_superuser", "is_active", "is_verified")
-    list_filter = ("phone", "email", "google_id", "is_superuser", "is_active", "is_verified")
+    list_display = (
+        "phone",
+        "email",
+        "google_id",
+        "is_superuser",
+        "is_active",
+        "is_verified",
+    )
+    list_filter = (
+        "phone",
+        "email",
+        "google_id",
+        "is_superuser",
+        "is_active",
+        "is_verified",
+    )
     searching_fields = ("phone",)
     ordering = ("phone",)
     filter_horizontal = []
@@ -67,6 +81,7 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     )
+
 
 admin.site.register(ShopUser, CustomUserAdmin)
 admin.site.register(Profile)

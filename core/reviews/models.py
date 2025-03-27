@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from shop.models import Product
+
 # Create your models here.
 
 User = get_user_model()
 
+
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="reviews")
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="reviews"
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])
     comment = models.TextField()

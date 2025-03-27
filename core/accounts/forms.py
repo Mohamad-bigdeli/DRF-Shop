@@ -52,13 +52,17 @@ class ShopUserChangeForm(forms.ModelForm):
         fields = ["phone", "email", "is_verified", "is_active"]
 
     def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
+        phone = self.cleaned_data.get("phone")
         if self.instance.pk:
-            if ShopUser.objects.filter(phone=phone).exclude(pk=self.instance.pk).exists():
-                raise forms.ValidationError('Phone already exist.')
+            if (
+                ShopUser.objects.filter(phone=phone)
+                .exclude(pk=self.instance.pk)
+                .exists()
+            ):
+                raise forms.ValidationError("Phone already exist.")
         else:
-            if ShopUser.objects.filter(phone=phone).exists(): 
-                raise forms.ValidationError('Phone already exist.')
+            if ShopUser.objects.filter(phone=phone).exists():
+                raise forms.ValidationError("Phone already exist.")
         if not phone.isdigit():
             raise forms.ValidationError("Invalid phone number.")
         if not phone.startswith("09"):

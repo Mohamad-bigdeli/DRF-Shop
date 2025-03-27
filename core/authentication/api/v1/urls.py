@@ -14,5 +14,5 @@ urlpatterns = [
     path("jwt/verify/", TokenVerifyView.as_view(), name="jwt-verify"),
     # otp urls
     path("otp/request/", OtpRequestView.as_view(), name="otp-request"),
-    path("otp/verify/", OtpVerifyView.as_view(), name="otp-verify")
+    path("otp/verify/", OtpVerifyView.as_view(), name="otp-verify"),
 ]

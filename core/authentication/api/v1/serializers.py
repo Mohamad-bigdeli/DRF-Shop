@@ -11,16 +11,20 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         validate_data["user_id"] = self.user.pk
         return validate_data
 
+
 class OtpRequestSerializer(serializers.Serializer):
 
     phone = serializers.CharField(max_length=11, required=True)
 
     def validate(self, attrs):
         if not attrs.get("phone").isdigit():
-            raise serializers.ValidationError({"detail":"Invalid phone number."})
+            raise serializers.ValidationError({"detail": "Invalid phone number."})
         if not attrs.get("phone").startswith("09"):
-            raise serializers.ValidationError({"detail":"Phone must start with 09 digits."})
+            raise serializers.ValidationError(
+                {"detail": "Phone must start with 09 digits."}
+            )
         return super().validate(attrs)
+
 
 class OtpVerifySerializer(serializers.Serializer):
 
@@ -29,7 +33,9 @@ class OtpVerifySerializer(serializers.Serializer):
 
     def validate(self, attrs):
         if not attrs.get("phone").isdigit():
-            raise serializers.ValidationError({"detail":"Invalid phone number."})
+            raise serializers.ValidationError({"detail": "Invalid phone number."})
         if not attrs.get("phone").startswith("09"):
-            raise serializers.ValidationError({"detail":"Phone must start with 09 digits."})
+            raise serializers.ValidationError(
+                {"detail": "Phone must start with 09 digits."}
+            )
         return super().validate(attrs)

@@ -16,11 +16,7 @@ class ShopUserManager(BaseUserManager):
             raise ValueError(_("The Phone field must be set"))
         if email:
             email = self.normalize_email(email)
-        user = self.model(
-            phone=phone,
-            email=email,
-            **extra_fields
-        )
+        user = self.model(phone=phone, email=email, **extra_fields)
         user.set_password(password)
         user.save()
         return user

@@ -1,6 +1,11 @@
 from rest_framework import viewsets
 from ...models import Category, Product
-from .serializers import CategorySerializer, ProductSerializer, ProductDocumentSerializer, CategoryDocumentSerializer
+from .serializers import (
+    CategorySerializer,
+    ProductSerializer,
+    ProductDocumentSerializer,
+    CategoryDocumentSerializer,
+)
 from rest_framework.permissions import IsAdminUser, SAFE_METHODS, AllowAny
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 from ...documents import ProductDocument, CategoryDocument
@@ -9,19 +14,21 @@ from django_elasticsearch_dsl_drf.filter_backends import (
     OrderingFilterBackend,
     MultiMatchSearchFilterBackend,
     DefaultOrderingFilterBackend,
-    SearchFilterBackend
+    SearchFilterBackend,
 )
 from .paginations import CustomPagination
 
+
 class CategoryViewSet(viewsets.ModelViewSet):
-    
+
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    
+
     def get_permissions(self):
         if self.request.method in SAFE_METHODS:
             return [AllowAny()]
         return [IsAdminUser()]
+
 
 class ProductViewSet(viewsets.ModelViewSet):
 
@@ -34,6 +41,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAdminUser()]
 
+
 class ProductDocumentViewSet(DocumentViewSet):
 
     document = ProductDocument
@@ -45,40 +53,37 @@ class ProductDocumentViewSet(DocumentViewSet):
         OrderingFilterBackend,
         MultiMatchSearchFilterBackend,
         DefaultOrderingFilterBackend,
-        SearchFilterBackend
+        SearchFilterBackend,
     ]
 
     multi_match_search_fields = {
         "title": {"boost": 4},
         "description": {"boost": 2},
         "category.title": {"boost": 3},
-        "features.value": {"boost": 1}
+        "features.value": {"boost": 1},
     }
 
-    search_fields = (
-        "title", 
-        "description",
-        "category.title",
-        "features.value"
-    )
+    search_fields = ("title", "description", "category.title", "features.value")
 
     multi_match_options = {
         "fuzziness": "AUTO",
         "prefix_length": 2,
-        "max_expansions": 50
+        "max_expansions": 50,
     }
 
     ordering_fields = {
         "final_price": "final_price",
         "created": "created",
-        "updated": "updated"
+        "updated": "updated",
     }
 
     filter_fields = {
         "final_price": "final_price",
         "category.title": "category.title",
-        "features.value": "features.value"
+        "features.value": "features.value",
     }
+
+
 class CategoryDocumentViewSet(DocumentViewSet):
 
     document = CategoryDocument
@@ -89,17 +94,12 @@ class CategoryDocumentViewSet(DocumentViewSet):
         OrderingFilterBackend,
         MultiMatchSearchFilterBackend,
         DefaultOrderingFilterBackend,
-        SearchFilterBackend
+        SearchFilterBackend,
     ]
     multi_match_search_fields = {
         "title": {"boost": 4},
     }
 
-    search_fields = [
-        "title"
-    ]
+    search_fields = ["title"]
 
-    ordering_fields = {
-        "created": "created",
-        "updated": "updated"
-    }
+    ordering_fields = {"created": "created", "updated": "updated"}

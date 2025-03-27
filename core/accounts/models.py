@@ -7,6 +7,7 @@ from .managers import ShopUserManager
 
 # Create your models here.
 
+
 class ShopUser(AbstractBaseUser, PermissionsMixin):
     """
     Custom User Model for our app
@@ -31,10 +32,12 @@ class ShopUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.phone
 
+
 class Profile(models.Model):
     """
     A model for user information's
     """
+
     user = models.OneToOneField(ShopUser, on_delete=models.CASCADE, related_name="user")
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)

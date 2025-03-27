@@ -13,7 +13,7 @@ CATEGORY_INDEX.settings(
             "edge_ngram_analyzer": {
                 "type": "custom",
                 "tokenizer": "edge_ngram_tokenizer",
-                "filter": ["lowercase"]
+                "filter": ["lowercase"],
             }
         },
         "tokenizer": {
@@ -21,24 +21,19 @@ CATEGORY_INDEX.settings(
                 "type": "edge_ngram",
                 "min_gram": 2,
                 "max_gram": 10,
-                "token_chars": ["letter", "digit"]
+                "token_chars": ["letter", "digit"],
             }
-        }
-    }
+        },
+    },
 )
+
 
 @CATEGORY_INDEX.doc_type
 class CategoryDocument(Document):
-    
-    title = fields.TextField(
-        analyzer="edge_ngram_analyzer", 
-        search_analyzer="standard"
-    )
+
+    title = fields.TextField(analyzer="edge_ngram_analyzer", search_analyzer="standard")
     slug = fields.TextField()
 
     class Django:
         model = Category
-        fields = [
-            "created",
-            "updated"
-        ]
+        fields = ["created", "updated"]
