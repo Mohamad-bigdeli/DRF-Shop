@@ -83,10 +83,10 @@ def verify_payment_task(authority):
             payment.gateway_response = response
             payment.save()
             logger.info(f"Payment {payment.id} verified successfully")
-            fulfill_order_task(order_id=payment.order.id)
+            fulfill_order_task.delay(order_id=payment.order.id)
             email = payment.order.user.email
             if email:
-                send_order_email(email)
+                send_order_email.delay(email)
 
         else:
             payment.status = "FAILED"

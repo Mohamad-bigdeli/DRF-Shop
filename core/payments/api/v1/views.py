@@ -69,7 +69,7 @@ class PaymentRequestView(CreateAPIView):
 
             CartService.clear_cart(user=user)
 
-            process_payment_task(payment_id=payment.id)
+            process_payment_task.delay(payment_id=payment.id)
 
             payment.refresh_from_db()
             order.refresh_from_db()
@@ -104,7 +104,7 @@ class PaymentVerifyView(APIView):
             if not payment.authority or not payment.amount:
                 raise ValidationError('Invalid payment data')
 
-            verify_payment_task(authority=payment.authority)
+            verify_payment_task.delay(authority=payment.authority)
 
             payment.refresh_from_db()
             result = PaymentRelatedSerializer(payment)
