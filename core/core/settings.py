@@ -214,9 +214,9 @@ SIMPLE_JWT = {
     "USER_ID_CLAIM": "sub",
 }
 
-# Zibal settings
-ZIBAL_MERCHANT_ID = config("ZIBAL_MERCHANT_ID")
-ZIBAL_SANDBOX = config("ZIBAL_SANDBOX")
+# ZarinPal settings
+ZARINPAL_MERCHANT_ID = config("ZARINPAL_MERCHANT_ID")
+ZARINPAL_SANDBOX = config("ZARINPAL_SANDBOX")
 BASE_URL = config("BASE_URL")
 
 # logging configs

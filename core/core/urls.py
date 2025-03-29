@@ -38,15 +38,12 @@ schema_view = get_schema_view(
 urlpatterns = [
     # App urls
     path("admin/", admin.site.urls),
-    path(
-        "shop/",
-        include("shop.urls", namespace="shop"),
-    ),
+    path("shop/",include("shop.urls", namespace="shop")),
     path("authentication/", include("authentication.urls", namespace="authentication")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("cart/", include("cart.urls", namespace="cart")),
     path("reviews/", include("reviews.urls", namespace="reviews")),
-    path("orders/", include("orders.urls", namespace="orders")),
+    path("payments/", include("payments.urls", namespace="payments")),
     # Documentation urls
     path(
         "swagger/api.json/",

@@ -1,8 +1,10 @@
 from celery import shared_task
 from .models import Order
+from mail_templated import EmailMessage
+from django.conf import settings
 
 
-@shared_task(bind=True, max_retries=3)
+@shared_task
 def fulfill_order_task(self, order_id):
     try:
         order = Order.objects.get(id=order_id)
@@ -12,8 +14,17 @@ def fulfill_order_task(self, order_id):
             product.inventory -= item.quantity
             product.save()
 
-        order.status = "PROCESSING"
+        order.status = "COMPLETED"
         order.save()
 
     except Exception as e:
-        raise self.retry(exc=e, countdown=300)
+        raise self.retry(exec=e ,countdown=300)
+
+@shared_task
+def send_order_email(email):
+    email_message = EmailMessage(
+        email_message="your order registered",
+        from_email=settings.EMAIL_HOST_USER,
+        to=[email],
+    )
+    email_message.send()

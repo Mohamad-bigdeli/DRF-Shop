@@ -17,7 +17,7 @@ class Payment(models.Model):
     )
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    transaction_id = models.CharField(max_length=100, blank=True)
+    authority = models.CharField(max_length=100, blank=True)
     payment_url = models.URLField(blank=True, null=True)
     gateway_response = models.JSONField(default=dict, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)

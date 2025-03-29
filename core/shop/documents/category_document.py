@@ -1,5 +1,4 @@
 from django_elasticsearch_dsl import Document, fields, Index
-from django.conf import settings
 from ..models import Category
 
 

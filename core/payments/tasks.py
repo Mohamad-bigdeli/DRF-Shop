@@ -1,17 +1,18 @@
 from celery import shared_task
 from django.conf import settings
 from django.urls import reverse
+from django.db import transaction
 from payments.models import Payment
-from .gateways import ZibalClient
+from .gateways.zarinpal import ZarinPalClient
 from .exceptions import PaymentError
-from orders.tasks import fulfill_order_task
+from orders.tasks import fulfill_order_task, send_order_email
 import logging
 
 logger = logging.getLogger("payments")
 
-
-# @shared_task(bind=True, max_retries=3)
-def process_payment_task(payment_id):
+@transaction.atomic()
+@shared_task
+def process_payment_task(self, payment_id):
 
     try:
         payment = Payment.objects.get(id=payment_id)
@@ -20,82 +21,83 @@ def process_payment_task(payment_id):
             return
 
         order = payment.order
-        callback_url = settings.BASE_URL + reverse("payments:verify-payment")
+        callback_url = settings.BASE_URL + reverse("accounts:api-v1:profile")
 
-        zibal = ZibalClient(
-            merchant_id=settings.ZIBAL_MERCHANT_ID, sandbox=settings.ZIBAL_SANDBOX
+        zarinpal = ZarinPalClient(
+            merchant_id=settings.ZARINPAL_MERCHANT_ID, sandbox=settings.ZARINPAL_SANDBOX
         )
 
         amount = int(float(payment.amount))
 
-        response = zibal.payment_request(
+        response = zarinpal.request_payment(
             amount=amount,
             callback_url=callback_url,
             description=f"Payment for order #{order.id}",
             mobile=order.phone,
-            order_id=str(order.id),
         )
 
-        track_id = response.get("trackId")
-        payment_url = zibal.generate_payment_url(track_id)
+        authority = response.get("authority")
+        payment_url = response.get("payment_url")
 
-        payment.transaction_id = track_id
+        payment.authority = authority
         payment.payment_url = payment_url
         payment.gateway_response = response
         payment.save()
 
         logger.info(
-            f"Payment {payment_id} processed successfully. Track ID: {track_id}"
+            f"Payment {payment_id} processed successfully. Track ID: {authority}"
         )
 
     except PaymentError as e:
         logger.error(f"Payment processing failed for {payment_id}: {str(e)}")
-        payment.status = "FAILED"
+        payment.status = "failed"
         payment.gateway_response = {"error": str(e)}
         payment.save()
-        raise  # self.retry(exc=e, countdown=60)
+        raise  self.retry(exc=e, countdown=60)
 
     except Exception as e:
         logger.exception(f"Unexpected error processing payment {payment_id}")
-        payment.status = "FAILED"
+        payment.status = "failed"
         payment.gateway_response = {"error": str(e)}
         payment.save()
-        raise  # self.retry(exc=e, countdown=60)
+        raise self.retry(exc=e, countdown=60)
 
-
+@transaction.atomic()
 @shared_task
-def verify_payment_task(track_id):
+def verify_payment_task(authority):
 
     try:
-        payment = Payment.objects.get(transaction_id=track_id)
-        if payment.status == "PAID":
-            logger.info(f"Payment with track ID {track_id} is already verified")
+        payment = Payment.objects.get(authority=authority)
+        if payment.status == "paid":
+            logger.info(f"Payment with authority {authority} is already verified")
             return
 
-        zibal = ZibalClient(
-            merchant_id=settings.ZIBAL_MERCHANT_ID, sandbox=settings.ZIBAL_SANDBOX
+        zarinpal = ZarinPalClient(
+            merchant_id=settings.ZARINPAL_MERCHANT_ID, sandbox=settings.ZARINPAL_SANDBOX
         )
 
-        response = zibal.payment_verify(track_id)
+        response = zarinpal.verify_payment(authority=authority, amount=int(float(payment.amount)))
 
-        if response.get("result") == 100:
+        if response["raw_response"]["data"]["code"] == 100:  
             payment.status = "PAID"
             payment.gateway_response = response
             payment.save()
-
             logger.info(f"Payment {payment.id} verified successfully")
-
-            fulfill_order_task.delay(payment.order.id)
+            fulfill_order_task(order_id=payment.order.id)
+            email = payment.order.user.email
+            if email:
+                send_order_email(email)
 
         else:
             payment.status = "FAILED"
             payment.gateway_response = response
             payment.save()
-            logger.error(f"Payment verification failed for track ID {track_id}")
+            logger.error(f"Payment verification failed. ZarinPal response: {response}")
+
 
     except Payment.DoesNotExist:
-        logger.error(f"Payment with track ID {track_id} not found")
+        logger.error(f"Payment with authority {authority} not found")
 
     except Exception:
-        logger.exception(f"Error verifying payment with track ID {track_id}")
+        logger.exception(f"Error verifying payment with authority {authority}")
         raise
