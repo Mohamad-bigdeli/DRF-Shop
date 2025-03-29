@@ -1,20 +1,38 @@
-django >3.2,<3.3
-python-decouple
-pillow
+# Core Django
+django>3.2,<3.3
+setuptools
+gunicorn
+
+# Authentication & Security
+djangorestframework-simplejwt
+django-cors-headers
+django-redis
+redis
+# django-admin-honeypot
+
+# REST Framework & Documentation
 djangorestframework
 drf-yasg[validation]
+
+# Database & Search
 elasticsearch-dsl==7.4.0
 elasticsearch==7.10.1
 django-elasticsearch-dsl==7.2.0
 django-elasticsearch-dsl-drf==0.22.0
-setuptools
+
+# Async Processing
 celery
-redis
-django-redis
-django-mail-templated
-django-cors-headers
-djangorestframework-simplejwt
-requests
+# redis
+
+# Development Tools
 ruff
-gunicorn
-# django-admin-honeypot
+python-decouple
+
+# Media Processing
+pillow
+
+# Email
+django-mail-templated
+
+# HTTP Requests
+requests
