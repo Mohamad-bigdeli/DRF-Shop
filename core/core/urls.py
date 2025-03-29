@@ -37,13 +37,15 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # App urls
-    path("admin/", admin.site.urls),
+    # path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+    path("secret-admin/", admin.site.urls),
     path("shop/",include("shop.urls", namespace="shop")),
     path("authentication/", include("authentication.urls", namespace="authentication")),
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("cart/", include("cart.urls", namespace="cart")),
     path("reviews/", include("reviews.urls", namespace="reviews")),
     path("payments/", include("payments.urls", namespace="payments")),
+    path("orders", include("orders.urls", namespace="orders")),
     # Documentation urls
     path(
         "swagger/api.json/",

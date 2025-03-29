@@ -20,14 +20,14 @@ class ZarinPalClient:
         self.timeout = timeout
         self.enable_logging = enable_logging
         
-        # Base URLs (Sandbox vs. Real)
+        # base urls
         self.base_api_url = (
             "https://payment.zarinpal.com/pg/v4/payment/"  # Production
             if not sandbox
             else "https://sandbox.zarinpal.com/pg/v4/payment/"  # Sandbox
         )
         
-        # Payment Gateway URL (For redirecting users)
+        # payment urls
         self.payment_gateway_url = (
             "https://payment.zarinpal.com/pg/StartPay/"  # Production
             if not sandbox

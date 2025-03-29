@@ -14,6 +14,13 @@ logger = logging.getLogger("payments")
 @shared_task
 def process_payment_task(self, payment_id):
 
+    """
+    Processes payment request through ZarinPal gateway:
+    - Creates payment request in gateway
+    - Stores gateway response
+    - Handles retries for failed attempts
+    """
+
     try:
         payment = Payment.objects.get(id=payment_id)
         if payment.status != "pending":
@@ -21,7 +28,7 @@ def process_payment_task(self, payment_id):
             return
 
         order = payment.order
-        callback_url = settings.BASE_URL + reverse("accounts:api-v1:profile")
+        callback_url = settings.BASE_URL + reverse("orders:api-v1:user-orders")
 
         zarinpal = ZarinPalClient(
             merchant_id=settings.ZARINPAL_MERCHANT_ID, sandbox=settings.ZARINPAL_SANDBOX
@@ -65,6 +72,13 @@ def process_payment_task(self, payment_id):
 @transaction.atomic()
 @shared_task
 def verify_payment_task(authority):
+
+    """
+    Verifies payment with ZarinPal gateway:
+    - Checks payment status
+    - Updates local payment record
+    - Triggers order fulfillment on success
+    """
 
     try:
         payment = Payment.objects.get(authority=authority)

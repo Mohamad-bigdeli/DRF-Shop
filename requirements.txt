@@ -16,3 +16,5 @@ django-cors-headers
 djangorestframework-simplejwt
 requests
 ruff
+gunicorn
+# django-admin-honeypot

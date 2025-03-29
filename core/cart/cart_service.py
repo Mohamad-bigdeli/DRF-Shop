@@ -62,7 +62,7 @@ class CartService:
                 }
             }
 
-        cache.set(cart_key, json.dumps(cart_item), timeout=86400)
+        cache.set(cart_key, json.dumps(cart_item), timeout=172800)
         return cart_item
 
     @staticmethod
@@ -100,7 +100,7 @@ class CartService:
                 float(cart_item[str(product.id)]["price"]) * quantity
             )
 
-        cache.set(cart_key, json.dumps(cart_item), timeout=86400)
+        cache.set(cart_key, json.dumps(cart_item), timeout=172800)
         return cart_item
 
     @staticmethod
@@ -134,7 +134,7 @@ class CartService:
             raise exceptions.ProductNotInCart("The product is not in your cart.")
 
         del cart_item[str(product.id)]
-        cache.set(cart_key, json.dumps(cart_item), timeout=86400)
+        cache.set(cart_key, json.dumps(cart_item), timeout=172800)
 
     @staticmethod
     def clear_cart(user: User) -> None:
