@@ -15,7 +15,6 @@ class ShopUser(AbstractBaseUser, PermissionsMixin):
 
     phone = models.CharField(max_length=11, unique=True)
     email = models.EmailField(max_length=255, unique=True, blank=True, null=True)
-    google_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
