@@ -72,14 +72,14 @@ To set up the project, follow the steps below:
    Clone the project repository to your local machine:
 
    ```bash
-   git clone https://github.com/Mohamad-bigdeli/DRF-OnlineExam.git
+   git clone https://github.com/Mohamad-bigdeli/DRF-Shop.git
 
 2. **Navigate to the Project Folder**
 
     Move into the project directory using the cd command:
 
     ```bash
-    cd DRF-OnlineExam
+    cd DRF-Shop
     
 
 3. **Start Docker Compose** 
